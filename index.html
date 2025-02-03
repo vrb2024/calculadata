@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Dias e Feriados</title>
+    <link rel="shortcut icon" href="calendario_32.ico" type="image/x-icon">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: url(Backbground.jpg);
+            background-size: cover;
+            background-position: center;
+        }
+
+        header {
+            text-align: center;
+            background-color: rgb(155, 65, 30);
+            color: #ffffff;
+            padding: 10px 20px;
+            width: 100%;
+        }
+
+        section {
+            margin: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+
+        section#calculadora {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            padding: 5px;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .feriados {
+            margin-top: 30px;
+        }
+
+        .feriados h2 {
+            color: #333;
+        }
+
+        .feriados ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .feriados li {
+            margin: 10px 0;
+        }
+
+        footer {
+            background-color: rgb(155, 65, 30);
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Calculadora de Dias entre Datas</h1>
+    </header>
+    <section id="calculadora">
+        <label for="dataInicio">Data Inicial:</label>
+        <input type="date" id="dataInicio">
+        <br>
+        <label for="dataFim">Data Final:</label>
+        <input type="date" id="dataFim">
+        <br>
+        <button onclick="calcularDias()">Calcular Dias</button>
+        <div class="result" id="resultado"></div>
+    </section>
+
+    <section id="lista">
+        <div class="feriados">
+            <h2>Próximos Feriados Nacionais</h2>
+            <ul id="listaFeriados"></ul>
+        </div>
+        <script>
+            //calcular a diferença de dias entre duas datas
+            function calcularDias() {
+                const dataInicio = new Date(document.getElementById('dataInicio').value);
+                const dataFim = new Date(document.getElementById('dataFim').value);
+                if (isNaN(dataInicio) || isNaN(dataFim)) {
+                    document.getElementById('resultado').innerText = "Por favor, insira datas válidas.";
+                    return;
+                }
+                const diffTime = Math.abs(dataFim - dataInicio);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('resultado').innerText = `Diferença de dias: ${diffDays} dias.`;
+            }
+            // feriados nacionais
+            const feriados = [
+                { nome: "Ano Novo", data: new Date(new Date().getFullYear(), 0, 1) },
+                { nome: "Carnaval", data: new Date(new Date().getFullYear(), 1, 21) },
+                { nome: "Dia do Trabalho", data: new Date(new Date().getFullYear(), 4, 1) },
+                { nome: "Independência do Brasil", data: new Date(new Date().getFullYear(), 8, 7) },
+                { nome: "Natal", data: new Date(new Date().getFullYear(), 11, 25) }
+            ];
+            //calcular dias restantes até os feriados
+            function diasRestantes(feriado) {
+                const hoje = new Date();
+                const dataFeriado = new Date(feriado.data);
+                dataFeriado.setFullYear(hoje.getFullYear()); // ajusta para o ano atual
+                if (dataFeriado < hoje) {
+                    dataFeriado.setFullYear(hoje.getFullYear() + 1); // se o feriado já passou, considera o próximo ano
+                }
+                const diffTime = Math.abs(dataFeriado - hoje);
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+            // exibir os feriados e dias restantes
+            const listaFeriados = document.getElementById('listaFeriados');
+            feriados.forEach(feriado => {
+                const dias = diasRestantes(feriado);
+                const item = document.createElement('li');
+                item.innerText = `${feriado.nome}: Faltam ${dias} dias.`;
+                listaFeriados.appendChild(item);
+            });
+        </script>
+    </section>
+    <footer>
+        <p>Site desenvolvido por VBorba</p>
+    </footer>
+</body>
+</html>
